@@ -3,21 +3,44 @@ server:
 
 spring:
   application:
-    name: starter-api
+    name: rewards-service
 
-# Actuator Endpoints for health and metrics monitoring
+  datasource:
+    url: jdbc:h2:mem:rewardsdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+# Management Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
+        include: health,info
 
 # Logging configuration
 logging:
   level:
     root: INFO
-    com.example.starter: DEBUG
+    com.retailer.rewards: DEBUG
     org.springframework.web: INFO

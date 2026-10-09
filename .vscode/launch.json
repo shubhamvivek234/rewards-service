@@ -3,10 +3,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Launch StarterApiApplication",
+      "name": "Launch RewardsApplication",
       "request": "launch",
-      "mainClass": "com.example.starter.StarterApiApplication",
-      "projectName": "starter-api",
+      "mainClass": "com.retailer.rewards.RewardsApplication",
+      "projectName": "rewards-service",
       "args": "",
       "env": {
         "SPRING_PROFILES_ACTIVE": "dev"
