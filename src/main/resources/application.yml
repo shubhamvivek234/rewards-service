@@ -31,14 +31,12 @@ spring:
       hibernate:
         format_sql: true
 
-# Management Actuator
 management:
   endpoints:
     web:
       exposure:
         include: health,info
 
-# Logging configuration
 logging:
   level:
     root: INFO

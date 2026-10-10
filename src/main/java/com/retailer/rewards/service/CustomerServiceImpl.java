@@ -11,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Implementation of {@link CustomerService} backed by {@link CustomerRepository}.
- */
 @Service
 @Transactional(readOnly = true)
 public class CustomerServiceImpl implements CustomerService {
@@ -22,32 +19,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    /**
-     * Constructs the service with required repository dependency.
-     *
-     * @param customerRepository customer repository
-     */
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
-    /**
-     * Retrieves all registered customers.
-     *
-     * @return list of customers
-     */
     @Override
     public List<Customer> getAllCustomers() {
         log.debug("Fetching all customers");
         return customerRepository.findAll();
     }
 
-    /**
-     * Retrieves a single customer by ID.
-     *
-     * @param id customer identifier
-     * @return found customer
-     */
     @Override
     public Customer getCustomerById(Long id) {
         log.debug("Fetching customer with id={}", id);
@@ -55,12 +36,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> CustomerNotFoundException.forId(id));
     }
 
-    /**
-     * Creates a new customer.
-     *
-     * @param customer entity to persist
-     * @return persisted customer
-     */
     @Override
     @Transactional
     public Customer createCustomer(Customer customer) {

@@ -11,7 +11,6 @@ import com.retailer.rewards.exception.InvalidTransactionException;
 import com.retailer.rewards.repository.CustomerRepository;
 import com.retailer.rewards.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,12 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link TransactionServiceImpl}.
- *
- * <p>Validates transaction recording, dynamic monthly aggregation over multiple months,
- * edge cases (e.g., zero transactions), and negative exception handling.</p>
- */
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
 
@@ -49,9 +42,6 @@ class TransactionServiceTest {
 
     private Customer sampleCustomer;
 
-    /**
-     * Sets up test fixtures and service instance.
-     */
     @BeforeEach
     void setUp() {
         rewardsCalculatorService = new RewardsCalculatorServiceImpl();
@@ -70,11 +60,7 @@ class TransactionServiceTest {
         );
     }
 
-    /**
-     * Verifies dynamic grouping and points calculation across 3 distinct months.
-     */
     @Test
-    @DisplayName("Should dynamically calculate monthly rewards across 3 distinct months without hardcoding")
     void testDynamicThreeMonthCalculation() {
         Transaction t1 = new Transaction(1L, sampleCustomer, BigDecimal.valueOf(120.00),
                 LocalDate.of(2026, 7, 12), "Electronics", 90L, LocalDateTime.now());
@@ -97,27 +83,23 @@ class TransactionServiceTest {
         assertThat(response.customerName()).isEqualTo("Alice Johnson");
         assertThat(response.totalTransactions()).isEqualTo(5);
         assertThat(response.totalAmountSpent()).isEqualByComparingTo(BigDecimal.valueOf(540.00));
-        // Total points: 90 + 0 + 250 + 25 + 50 = 415 points
         assertThat(response.totalRewardPoints()).isEqualTo(415L);
 
         List<MonthlyRewardDto> monthlyRewards = response.monthlyRewards();
         assertThat(monthlyRewards).hasSize(3);
 
-        // July 2026
         MonthlyRewardDto july = monthlyRewards.get(0);
         assertThat(july.yearMonth()).isEqualTo("2026-07");
         assertThat(july.monthName()).isEqualTo("JULY");
         assertThat(july.transactionCount()).isEqualTo(2);
         assertThat(july.rewardPoints()).isEqualTo(90L);
 
-        // August 2026
         MonthlyRewardDto august = monthlyRewards.get(1);
         assertThat(august.yearMonth()).isEqualTo("2026-08");
         assertThat(august.monthName()).isEqualTo("AUGUST");
         assertThat(august.transactionCount()).isEqualTo(2);
-        assertThat(august.rewardPoints()).isEqualTo(275L); // 250 + 25
+        assertThat(august.rewardPoints()).isEqualTo(275L);
 
-        // September 2026
         MonthlyRewardDto september = monthlyRewards.get(2);
         assertThat(september.yearMonth()).isEqualTo("2026-09");
         assertThat(september.monthName()).isEqualTo("SEPTEMBER");
@@ -125,11 +107,7 @@ class TransactionServiceTest {
         assertThat(september.rewardPoints()).isEqualTo(50L);
     }
 
-    /**
-     * Verifies behavior when customer has zero recorded transactions.
-     */
     @Test
-    @DisplayName("Should handle customer with zero transactions gracefully")
     void testCustomerWithNoTransactions() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(sampleCustomer));
         when(transactionRepository.findByCustomerIdOrderByTransactionDateAsc(1L)).thenReturn(List.of());
@@ -143,11 +121,7 @@ class TransactionServiceTest {
         assertThat(response.monthlyRewards()).isEmpty();
     }
 
-    /**
-     * Negative scenario: throws CustomerNotFoundException when customer ID is invalid.
-     */
     @Test
-    @DisplayName("Should throw CustomerNotFoundException when customer does not exist")
     void testGetRewardsCustomerNotFound() {
         when(customerRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -156,11 +130,7 @@ class TransactionServiceTest {
                 .hasMessageContaining("Customer not found with ID: 999");
     }
 
-    /**
-     * Negative scenario: throws InvalidTransactionException when start date is after end date.
-     */
     @Test
-    @DisplayName("Should throw InvalidTransactionException when startDate is after endDate")
     void testInvalidDateRangeThrows() {
         LocalDate start = LocalDate.of(2026, 9, 30);
         LocalDate end = LocalDate.of(2026, 7, 1);
@@ -170,11 +140,7 @@ class TransactionServiceTest {
                 .hasMessageContaining("cannot be after end date");
     }
 
-    /**
-     * Verifies recording a valid transaction and calculating its reward points.
-     */
     @Test
-    @DisplayName("Should record transaction and compute 90 reward points for $120 purchase")
     void testRecordTransactionSuccess() {
         CreateTransactionRequest request = new CreateTransactionRequest(
                 1L,
@@ -201,11 +167,7 @@ class TransactionServiceTest {
         verify(transactionRepository).save(any(Transaction.class));
     }
 
-    /**
-     * Negative scenario: throws InvalidTransactionException when transaction amount is non-positive.
-     */
     @Test
-    @DisplayName("Should throw InvalidTransactionException when amount is zero or negative")
     void testRecordTransactionNegativeAmount() {
         CreateTransactionRequest request = new CreateTransactionRequest(
                 1L,
@@ -221,11 +183,7 @@ class TransactionServiceTest {
                 .hasMessageContaining("must be strictly greater than zero");
     }
 
-    /**
-     * Negative scenario: throws InvalidTransactionException when transaction date is in the future.
-     */
     @Test
-    @DisplayName("Should throw InvalidTransactionException when transaction date is in the future")
     void testRecordTransactionFutureDate() {
         CreateTransactionRequest request = new CreateTransactionRequest(
                 1L,
