@@ -9,9 +9,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,25 +20,6 @@ class TransactionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Test
-    void testGetAllTransactions() throws Exception {
-        mockMvc.perform(get("/api/v1/transactions")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.data", hasSize(greaterThanOrEqualTo(10))));
-    }
-
-    @Test
-    void testGetTransactionsByCustomerId() throws Exception {
-        mockMvc.perform(get("/api/v1/transactions")
-                        .param("customerId", "1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success", equalTo(true)))
-                .andExpect(jsonPath("$.data", hasSize(6)));
-    }
 
     @Test
     void testCreateTransactionSuccess() throws Exception {

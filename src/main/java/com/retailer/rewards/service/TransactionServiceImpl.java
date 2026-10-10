@@ -44,6 +44,44 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<CustomerRewardsResponse> getRewardsSummaryForAllCustomers(LocalDate startDate, LocalDate endDate) {
+        validateDateRange(startDate, endDate);
+
+        List<Customer> allCustomers = customerRepository.findAll();
+
+        return allCustomers.stream()
+                .map(customer -> {
+                    List<Transaction> customerTransactions;
+                    if (startDate != null && endDate != null) {
+                        customerTransactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
+                                customer.getId(), startDate, endDate);
+                    } else {
+                        customerTransactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customer.getId());
+                    }
+                    return buildCustomerRewardsResponse(customer, customerTransactions);
+                })
+                .toList();
+    }
+
+    @Override
+    public CustomerRewardsResponse getRewardsSummaryForCustomer(Long customerId, LocalDate startDate, LocalDate endDate) {
+        validateDateRange(startDate, endDate);
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> CustomerNotFoundException.forId(customerId));
+
+        List<Transaction> transactions;
+        if (startDate != null && endDate != null) {
+            transactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
+                    customerId, startDate, endDate);
+        } else {
+            transactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customerId);
+        }
+
+        return buildCustomerRewardsResponse(customer, transactions);
+    }
+
+    @Override
     @Transactional
     public TransactionResponseDto recordTransaction(CreateTransactionRequest request) {
         log.info("Recording new transaction for customer ID: {}, amount: ${}", request.customerId(), request.amount());
@@ -75,73 +113,6 @@ public class TransactionServiceImpl implements TransactionService {
         log.info("Saved transaction ID {} with {} points awarded", saved.getId(), calculatedPoints);
 
         return toResponseDto(saved);
-    }
-
-    @Override
-    public List<TransactionResponseDto> getTransactions(Long customerId, LocalDate startDate, LocalDate endDate) {
-        validateDateRange(startDate, endDate);
-
-        List<Transaction> transactions;
-
-        if (customerId != null) {
-            if (!customerRepository.existsById(customerId)) {
-                throw CustomerNotFoundException.forId(customerId);
-            }
-            if (startDate != null && endDate != null) {
-                transactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
-                        customerId, startDate, endDate);
-            } else {
-                transactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customerId);
-            }
-        } else {
-            if (startDate != null && endDate != null) {
-                transactions = transactionRepository.findByTransactionDateBetweenOrderByTransactionDateAsc(startDate, endDate);
-            } else {
-                transactions = transactionRepository.findAllWithCustomer();
-            }
-        }
-
-        return transactions.stream()
-                .map(this::toResponseDto)
-                .toList();
-    }
-
-    @Override
-    public CustomerRewardsResponse getRewardsSummaryForCustomer(Long customerId, LocalDate startDate, LocalDate endDate) {
-        validateDateRange(startDate, endDate);
-
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> CustomerNotFoundException.forId(customerId));
-
-        List<Transaction> transactions;
-        if (startDate != null && endDate != null) {
-            transactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
-                    customerId, startDate, endDate);
-        } else {
-            transactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customerId);
-        }
-
-        return buildCustomerRewardsResponse(customer, transactions);
-    }
-
-    @Override
-    public List<CustomerRewardsResponse> getRewardsSummaryForAllCustomers(LocalDate startDate, LocalDate endDate) {
-        validateDateRange(startDate, endDate);
-
-        List<Customer> allCustomers = customerRepository.findAll();
-
-        return allCustomers.stream()
-                .map(customer -> {
-                    List<Transaction> customerTransactions;
-                    if (startDate != null && endDate != null) {
-                        customerTransactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
-                                customer.getId(), startDate, endDate);
-                    } else {
-                        customerTransactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customer.getId());
-                    }
-                    return buildCustomerRewardsResponse(customer, customerTransactions);
-                })
-                .toList();
     }
 
     private CustomerRewardsResponse buildCustomerRewardsResponse(Customer customer, List<Transaction> transactions) {

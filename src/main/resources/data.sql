@@ -1,8 +1,8 @@
 INSERT INTO customers (id, name, email, phone, created_at) VALUES
-(1, 'Alice Johnson', 'alice.johnson@example.com', '+1-555-0101', CURRENT_TIMESTAMP),
-(2, 'Bob Smith', 'bob.smith@example.com', '+1-555-0102', CURRENT_TIMESTAMP),
-(3, 'Carol Davis', 'carol.davis@example.com', '+1-555-0103', CURRENT_TIMESTAMP),
-(4, 'David Wilson', 'david.wilson@example.com', '+1-555-0104', CURRENT_TIMESTAMP);
+(1, 'Alice Johnson', 'alice.johnson@example.com', '+91-555-0101', CURRENT_TIMESTAMP),
+(2, 'Bob Smith', 'bob.smith@example.com', '+91-555-0102', CURRENT_TIMESTAMP),
+(3, 'Carol Davis', 'carol.davis@example.com', '+91-555-0103', CURRENT_TIMESTAMP),
+(4, 'David Wilson', 'david.wilson@example.com', '+91-555-0104', CURRENT_TIMESTAMP);
 
 INSERT INTO transactions (customer_id, amount, transaction_date, description, reward_points, created_at) VALUES
 (1, 120.00, '2026-07-12', 'Electronics Store Purchase', 90, CURRENT_TIMESTAMP),

@@ -2,7 +2,6 @@ package com.retailer.rewards.repository;
 
 import com.retailer.rewards.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -15,10 +14,4 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
             Long customerId, LocalDate startDate, LocalDate endDate);
-
-    List<Transaction> findByTransactionDateBetweenOrderByTransactionDateAsc(
-            LocalDate startDate, LocalDate endDate);
-
-    @Query("SELECT t FROM Transaction t JOIN FETCH t.customer ORDER BY t.transactionDate ASC")
-    List<Transaction> findAllWithCustomer();
 }
