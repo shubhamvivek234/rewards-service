@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Implementation of {@link RewardsCalculatorService} calculating points using two-tier threshold logic.
+ */
 @Service
 public class RewardsCalculatorServiceImpl implements RewardsCalculatorService {
 
@@ -16,6 +19,12 @@ public class RewardsCalculatorServiceImpl implements RewardsCalculatorService {
     private static final BigDecimal SECOND_THRESHOLD = BigDecimal.valueOf(100);
     private static final long POINTS_FOR_FIRST_TIER = 50L;
 
+    /**
+     * Calculates reward points: 2 points per dollar over $100 plus 1 point per dollar between $50 and $100.
+     *
+     * @param amount the purchase transaction amount
+     * @return total reward points earned
+     */
     @Override
     public long calculatePoints(BigDecimal amount) {
         if (amount == null || amount.compareTo(FIRST_THRESHOLD) <= 0) {
@@ -37,6 +46,12 @@ public class RewardsCalculatorServiceImpl implements RewardsCalculatorService {
         return points;
     }
 
+    /**
+     * Overloaded method converting double amount to BigDecimal for points calculation.
+     *
+     * @param amount the purchase transaction amount
+     * @return total reward points earned
+     */
     @Override
     public long calculatePoints(double amount) {
         return calculatePoints(BigDecimal.valueOf(amount));

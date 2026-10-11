@@ -15,6 +15,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * JPA entity representing a customer purchase transaction and awarded reward points.
+ */
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -42,9 +45,15 @@ public class Transaction {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * Default constructor for JPA entity instantiation.
+     */
     public Transaction() {
     }
 
+    /**
+     * Parameterized constructor for transaction entity creation.
+     */
     public Transaction(Long id, Customer customer, BigDecimal amount, LocalDate transactionDate,
                        String description, Long rewardPoints, LocalDateTime createdAt) {
         this.id = id;

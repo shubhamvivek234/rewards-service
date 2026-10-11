@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link TransactionService} managing customer rewards and transaction persistence.
+ */
 @Service
 @Transactional(readOnly = true)
 public class TransactionServiceImpl implements TransactionService {
@@ -33,6 +36,13 @@ public class TransactionServiceImpl implements TransactionService {
     private final CustomerRepository customerRepository;
     private final RewardsCalculatorService rewardsCalculatorService;
 
+    /**
+     * Constructs the transaction service with required dependencies.
+     *
+     * @param transactionRepository  repository for transaction persistence
+     * @param customerRepository     repository for customer access
+     * @param rewardsCalculatorService calculator service for points computation
+     */
     public TransactionServiceImpl(
             TransactionRepository transactionRepository,
             CustomerRepository customerRepository,
@@ -43,6 +53,13 @@ public class TransactionServiceImpl implements TransactionService {
         this.rewardsCalculatorService = rewardsCalculatorService;
     }
 
+    /**
+     * Retrieves reward summaries grouped dynamically by month for all customers.
+     *
+     * @param startDate optional start date filter
+     * @param endDate   optional end date filter
+     * @return list of customer reward responses
+     */
     @Override
     public List<CustomerRewardsResponse> getRewardsSummaryForAllCustomers(LocalDate startDate, LocalDate endDate) {
         validateDateRange(startDate, endDate);
@@ -63,6 +80,14 @@ public class TransactionServiceImpl implements TransactionService {
                 .toList();
     }
 
+    /**
+     * Retrieves reward summary grouped dynamically by month for a specific customer.
+     *
+     * @param customerId customer identifier
+     * @param startDate  optional start date filter
+     * @param endDate    optional end date filter
+     * @return customer rewards response
+     */
     @Override
     public CustomerRewardsResponse getRewardsSummaryForCustomer(Long customerId, LocalDate startDate, LocalDate endDate) {
         validateDateRange(startDate, endDate);
@@ -73,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions;
         if (startDate != null && endDate != null) {
             transactions = transactionRepository.findByCustomerIdAndTransactionDateBetweenOrderByTransactionDateAsc(
-                    customerId, startDate, endDate);
+                customerId, startDate, endDate);
         } else {
             transactions = transactionRepository.findByCustomerIdOrderByTransactionDateAsc(customerId);
         }
@@ -81,6 +106,12 @@ public class TransactionServiceImpl implements TransactionService {
         return buildCustomerRewardsResponse(customer, transactions);
     }
 
+    /**
+     * Validates input, calculates reward points, and persists a new customer transaction.
+     *
+     * @param request transaction creation request
+     * @return persisted transaction response
+     */
     @Override
     @Transactional
     public TransactionResponseDto recordTransaction(CreateTransactionRequest request) {
@@ -115,6 +146,13 @@ public class TransactionServiceImpl implements TransactionService {
         return toResponseDto(saved);
     }
 
+    /**
+     * Aggregates transactions by month and computes monthly and grand total rewards.
+     *
+     * @param customer     customer entity
+     * @param transactions customer transactions
+     * @return populated rewards response
+     */
     private CustomerRewardsResponse buildCustomerRewardsResponse(Customer customer, List<Transaction> transactions) {
         Map<YearMonth, List<Transaction>> transactionsByMonth = transactions.stream()
                 .collect(Collectors.groupingBy(t -> YearMonth.from(t.getTransactionDate())));
@@ -163,12 +201,24 @@ public class TransactionServiceImpl implements TransactionService {
         );
     }
 
+    /**
+     * Validates that start date is not after end date when both are provided.
+     *
+     * @param startDate range start date
+     * @param endDate   range end date
+     */
     private void validateDateRange(LocalDate startDate, LocalDate endDate) {
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             throw new InvalidTransactionException("Start date (" + startDate + ") cannot be after end date (" + endDate + ")");
         }
     }
 
+    /**
+     * Maps a {@link Transaction} entity to a {@link TransactionResponseDto}.
+     *
+     * @param transaction transaction entity
+     * @return transaction response DTO
+     */
     private TransactionResponseDto toResponseDto(Transaction transaction) {
         return new TransactionResponseDto(
                 transaction.getId(),

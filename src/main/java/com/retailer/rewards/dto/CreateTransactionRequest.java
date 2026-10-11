@@ -8,6 +8,9 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * DTO payload for recording a new customer purchase transaction.
+ */
 public record CreateTransactionRequest(
         @NotNull(message = "Customer ID is required")
         Long customerId,

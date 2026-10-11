@@ -13,11 +13,21 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.List;
 
+/**
+ * Centralized exception handler providing consistent REST error responses.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /**
+     * Handles {@link CustomerNotFoundException} returning HTTP 404 Not Found.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 404 error response
+     */
     @ExceptionHandler(CustomerNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCustomerNotFound(
             CustomerNotFoundException ex,
@@ -33,6 +43,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    /**
+     * Handles {@link InvalidTransactionException} returning HTTP 400 Bad Request.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 400 error response
+     */
     @ExceptionHandler(InvalidTransactionException.class)
     public ResponseEntity<ErrorResponse> handleInvalidTransaction(
             InvalidTransactionException ex,
@@ -48,6 +65,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles payload validation errors returning HTTP 400 Bad Request with field details.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 400 error response with field error list
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex,
@@ -70,6 +94,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles parameter type mismatch errors returning HTTP 400 Bad Request.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 400 error response
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex,
@@ -86,6 +117,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles illegal argument exceptions returning HTTP 400 Bad Request.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 400 error response
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex,
@@ -101,6 +139,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handles unhandled exceptions returning HTTP 500 Internal Server Error.
+     *
+     * @param ex      the exception
+     * @param request the current HTTP request
+     * @return 500 error response
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex,
@@ -116,6 +161,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
+    /**
+     * Formats a field error into a readable message string.
+     *
+     * @param error field validation error
+     * @return formatted message
+     */
     private String formatFieldError(FieldError error) {
         return String.format("%s: %s", error.getField(), error.getDefaultMessage());
     }

@@ -10,6 +10,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * JPA entity representing a customer in the rewards program.
+ */
 @Entity
 @Table(name = "customers")
 public class Customer {
@@ -30,9 +33,15 @@ public class Customer {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * Default constructor for JPA entity instantiation.
+     */
     public Customer() {
     }
 
+    /**
+     * Parameterized constructor for customer entity creation.
+     */
     public Customer(Long id, String name, String email, String phone, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;

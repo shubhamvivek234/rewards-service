@@ -11,22 +11,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST controller for customer lookup endpoints.
+ */
 @RestController
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
 
     private final CustomerService customerService;
 
+    /**
+     * Constructs the customer controller with service dependency.
+     *
+     * @param customerService customer service
+     */
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
+    /**
+     * Retrieves all registered customers.
+     *
+     * @return list of customers wrapped in API response
+     */
     @GetMapping
     public ResponseEntity<ApiResponse<List<Customer>>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(ApiResponse.ok("Retrieved " + customers.size() + " customers", customers));
     }
 
+    /**
+     * Retrieves a single customer by unique ID.
+     *
+     * @param id customer identifier
+     * @return customer details wrapped in API response
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Customer>> getCustomerById(@PathVariable Long id) {
         Customer customer = customerService.getCustomerById(id);
