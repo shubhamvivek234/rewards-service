@@ -55,7 +55,7 @@ class TransactionServiceTest {
                 1L,
                 "Alice Johnson",
                 "alice.johnson@example.com",
-                "+1-555-0101",
+                "+91-555-0101",
                 LocalDateTime.now()
         );
     }
