@@ -3,11 +3,11 @@
 A Spring Boot REST API for calculating customer reward points based on retail transaction purchases.
 
 ## Rewards Logic
-- **2 points** for every dollar spent **over $100** per transaction.
-- **1 point** for every dollar spent **between $50 and $100** per transaction.
-- **0 points** for transactions of **$50 or less**.
+- **2 points** for every rupee spent **over ₹100** per transaction.
+- **1 point** for every rupee spent **between ₹50 and ₹100** per transaction.
+- **0 points** for transactions of **₹50 or less**.
 
-*Example: A $120 purchase earns `(2 * $20) + (1 * $50) = 90` points.*
+*Example: A ₹120 purchase earns `(2 * ₹20) + (1 * ₹50) = 90` points.*
 
 ## Tech Stack
 - Java 17
